@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz, Video, and Coding</title>
+    <title>Interactive Quiz, Video, and Coding Platform</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,14 +18,7 @@
             max-width: 800px;
             margin: auto;
         }
-        .quiz {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .coding-section {
+        .quiz, .coding-section {
             background-color: #fff;
             padding: 20px;
             margin-bottom: 20px;
@@ -76,12 +69,12 @@
             <input type="radio" name="q1" value="b"> Home Tool Markup Language<br>
             <input type="radio" name="q1" value="c"> Hyperlinks and Text Markup Language<br>
 
-            <p><strong>2. What is the correct way to create a function in JavaScript?</strong></p>
-            <input type="radio" name="q2" value="a"> function = myFunction()<br>
-            <input type="radio" name="q2" value="b"> function myFunction()<br>
-            <input type="radio" name="q2" value="c"> create myFunction()<br>
+            <p><strong>2. What is the correct way to create a function in Python?</strong></p>
+            <input type="radio" name="q2" value="a"> def myFunction()<br>
+            <input type="radio" name="q2" value="b"> create myFunction()<br>
+            <input type="radio" name="q2" value="c"> function myFunction()<br>
 
-            <button type="button" onclick="checkQuiz()">Submit Quiz</button>
+            <button type="button" onclick="submitQuiz()">Submit Quiz</button>
         </form>
         <p id="quizResult"></p>
     </section>
@@ -89,7 +82,7 @@
     <!-- Coding Section -->
     <section class="coding-section">
         <h2>Try Coding</h2>
-        <p>Write your JavaScript code below and click "Run Code" to see the result:</p>
+        <p>Write your Python code below and click "Run Code" to see the result:</p>
         <textarea id="codeInput" rows="8" style="width: 100%;"></textarea><br>
         <button onclick="runCode()">Run Code</button>
         <h3>Output:</h3>
@@ -99,31 +92,40 @@
 </div>
 
 <script>
-    // Quiz check function
-    function checkQuiz() {
-        const form = document.forms['quizForm'];
-        let score = 0;
+    // Submit quiz function
+    function submitQuiz() {
+        const formData = new FormData(document.getElementById('quizForm'));
+        const answers = {};
+        formData.forEach((value, key) => answers[key] = value);
 
-        if (form.q1.value === 'a') {
-            score++;
-        }
-        if (form.q2.value === 'b') {
-            score++;
-        }
-
-        const resultText = `You got ${score} out of 2 questions right!`;
-        document.getElementById('quizResult').innerText = resultText;
+        fetch('/check_quiz', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(answers),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('quizResult').innerText = data.result;
+        });
     }
 
-    // Code run function
+    // Run code function
     function runCode() {
         const code = document.getElementById('codeInput').value;
-        try {
-            const result = eval(code); // Note: Be cautious using eval for security reasons in real-world applications
-            document.getElementById('output').innerText = result || 'Code executed successfully';
-        } catch (error) {
-            document.getElementById('output').innerText = `Error: ${error.message}`;
-        }
+        
+        fetch('/run_code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({code: code}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('output').innerText = data.output;
+        });
     }
 </script>
 
