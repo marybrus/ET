@@ -49,10 +49,11 @@
     <!-- Video Section -->
     <div class="video-section">
         <h2>Watch the video to get started</h2>
-        <video width="640" height="360" controls>
-            <source src="https://www.youtube.com/watch?v=uMeFaDAUE9w" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <!-- Embed YouTube video -->
+        <iframe width="640" height="360" src="https://www.youtube.com/embed/uMeFaDAUE9w" 
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
     </div>
 
     <!-- Quiz Section -->
@@ -86,8 +87,8 @@
     </div>
 
     <!-- Skulpt JavaScript Library for Python Execution -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.0.0/skulpt.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.0.0/skulpt-stdlib.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
 
     <script>
         // Quiz Logic
@@ -115,22 +116,22 @@
             outputElement.innerText = "Running...";
 
             Sk.pre = "output";
-            Sk.configure({ output: outf, read: builtinRead });
+            Sk.configure({
+                output: outf,
+                read: builtinRead,
+                execLimit: 10000, // 10 seconds execution limit to prevent long-running code
+            });
 
             function outf(text) {
                 outputElement.innerText += text + "\n";
             }
 
-            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-            let myPromise = Sk.misceval.asyncToPromise(function() {
+            Sk.misceval.asyncToPromise(function() {
                 return Sk.importMainWithBody("<stdin>", false, code, true);
-            });
-
-            myPromise.then(function(mod) {
-                outputElement.innerText = "Program finished.";
-            },
-            function(err) {
-                outputElement.innerText = err.toString();
+            }).then(function(mod) {
+                outputElement.innerText = "Program finished.\n";
+            }).catch(function(err) {
+                outputElement.innerText = "Error: " + err.toString() + "\n";
             });
         }
     </script>
