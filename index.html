@@ -3,131 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz, Video, and Coding Platform</title>
+    <title>Learn Python</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
         }
-        h1, h2 {
+        h2 {
             color: #333;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
+        .quiz-section, .coding-section {
+            margin: 20px 0;
         }
-        .quiz, .coding-section {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        pre {
-            background-color: #e8e8e8;
+        .quiz-section {
+            background-color: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
         }
-        iframe {
+        .coding-section textarea {
             width: 100%;
-            height: 400px;
+            height: 200px;
+            margin-bottom: 10px;
+        }
+        .coding-output {
+            background-color: #e8e8e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .submit-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            margin-bottom: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Interactive Quiz, Video, and Coding Platform</h1>
+    <h1>Welcome to Python Learning</h1>
 
     <!-- Video Section -->
-    <section class="video">
-        <h2>Watch this Video</h2>
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-    </section>
+    <div class="video-section">
+        <h2>Watch the video to get started</h2>
+        <video width="640" height="360" controls>
+            <source src="your-video-file.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
 
     <!-- Quiz Section -->
-    <section class="quiz">
-        <h2>Quiz</h2>
-        <form id="quizForm">
-            <p><strong>1. What does HTML stand for?</strong></p>
-            <input type="radio" name="q1" value="a"> Hyper Text Markup Language<br>
-            <input type="radio" name="q1" value="b"> Home Tool Markup Language<br>
-            <input type="radio" name="q1" value="c"> Hyperlinks and Text Markup Language<br>
+    <div class="quiz-section">
+        <h2>Quiz: Python Basics</h2>
 
-            <p><strong>2. What is the correct way to create a function in Python?</strong></p>
-            <input type="radio" name="q2" value="a"> def myFunction()<br>
-            <input type="radio" name="q2" value="b"> create myFunction()<br>
-            <input type="radio" name="q2" value="c"> function myFunction()<br>
+        <form id="quiz">
+            <p><strong>1. How do you print something in Python?</strong></p>
+            <input type="radio" name="q1" value="a"> print('text')<br>
+            <input type="radio" name="q1" value="b"> echo('text')<br>
+            <input type="radio" name="q1" value="c"> write('text')<br>
 
-            <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+            <p><strong>2. How do you write a comment in Python?</strong></p>
+            <input type="radio" name="q2" value="a"> // This is a comment<br>
+            <input type="radio" name="q2" value="b"> /* This is a comment */<br>
+            <input type="radio" name="q2" value="c"> # This is a comment<br>
+
+            <button type="button" class="submit-btn" onclick="checkQuiz()">Submit Quiz</button>
         </form>
-        <p id="quizResult"></p>
-    </section>
+
+        <div id="quiz-result"></div>
+    </div>
 
     <!-- Coding Section -->
-    <section class="coding-section">
-        <h2>Try Coding</h2>
-        <p>Write your Python code below and click "Run Code" to see the result:</p>
-        <textarea id="codeInput" rows="8" style="width: 100%;"></textarea><br>
-        <button onclick="runCode()">Run Code</button>
-        <h3>Output:</h3>
-        <pre id="output"></pre>
-    </section>
+    <div class="coding-section">
+        <h2>Practice Python Coding</h2>
+        <p>Write Python code below and click "Run Code" to execute it.</p>
+        <textarea id="code-input">print("Hello, Python!")</textarea>
+        <button class="submit-btn" onclick="runPythonCode()">Run Code</button>
+        <div id="output" class="coding-output"></div>
+    </div>
 
-</div>
+    <!-- Skulpt JavaScript Library for Python Execution -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.0.0/skulpt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.0.0/skulpt-stdlib.js"></script>
 
-<script>
-    // Submit quiz function
-    function submitQuiz() {
-        const formData = new FormData(document.getElementById('quizForm'));
-        const answers = {};
-        formData.forEach((value, key) => answers[key] = value);
+    <script>
+        // Quiz Logic
+        function checkQuiz() {
+            let score = 0;
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
 
-        fetch('/check_quiz', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+            if (q1 && q1.value === 'a') score++;
+            if (q2 && q2.value === 'c') score++;
+
+            document.getElementById('quiz-result').innerText = "You scored: " + score + "/2";
+        }
+
+        // Python Code Execution using Skulpt
+        function builtinRead(x) {
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+                throw "File not found: '" + x + "'";
+            return Sk.builtinFiles["files"][x];
+        }
+
+        function runPythonCode() {
+            let code = document.getElementById('code-input').value;
+            let outputElement = document.getElementById('output');
+            outputElement.innerText = "Running...";
+
+            Sk.pre = "output";
+            Sk.configure({ output: outf, read: builtinRead });
+
+            function outf(text) {
+                outputElement.innerText += text + "\n";
+            }
+
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+            let myPromise = Sk.misceval.asyncToPromise(function() {
+                return Sk.importMainWithBody("<stdin>", false, code, true);
+            });
+
+            myPromise.then(function(mod) {
+                outputElement.innerText = "Program finished.";
             },
-            body: JSON.stringify(answers),
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('quizResult').innerText = data.result;
-        });
-    }
-
-    // Run code function
-    function runCode() {
-        const code = document.getElementById('codeInput').value;
-        
-        fetch('/run_code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({code: code}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('output').innerText = data.output;
-        });
-    }
-</script>
+            function(err) {
+                outputElement.innerText = err.toString();
+            });
+        }
+    </script>
 
 </body>
 </html>
