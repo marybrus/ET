@@ -113,7 +113,7 @@
         function runPythonCode() {
             let code = document.getElementById('code-input').value;
             let outputElement = document.getElementById('output');
-            outputElement.innerText = "Running...";
+            outputElement.innerText = ""; // Clear previous output
 
             Sk.pre = "output";
             Sk.configure({
@@ -123,13 +123,13 @@
             });
 
             function outf(text) {
-                outputElement.innerText += text + "\n";
+                outputElement.innerText += text; // Append the output to the div
             }
 
             Sk.misceval.asyncToPromise(function() {
                 return Sk.importMainWithBody("<stdin>", false, code, true);
             }).then(function(mod) {
-                outputElement.innerText = "Program finished.\n";
+                outputElement.innerText += "\nProgram finished.";
             }).catch(function(err) {
                 outputElement.innerText = "Error: " + err.toString() + "\n";
             });
