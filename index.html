@@ -42,6 +42,29 @@
             font-size: 14px;
             height: auto;
         }
+
+        /* Progress bar styling */
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+        }
+        .progress-container {
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            width: 100%;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            text-align: center;
+            color: white;
+            width: 0;
+            line-height: 20px;
+        }
     </style>
 
     <!-- Add CodeMirror CSS for Syntax Highlighting -->
@@ -58,7 +81,7 @@
         <!-- Embed YouTube video -->
         <iframe width="640" height="360" src="https://www.youtube.com/embed/uMeFaDAUE9w" 
                 frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
+                allowfullscreen id="video-iframe">
         </iframe>
     </div>
 
@@ -92,6 +115,14 @@
         <div id="output" class="coding-output"></div>
     </div>
 
+    <!-- Footer with Progress Bar -->
+    <div class="footer">
+        <h2>Progress</h2>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar">0%</div>
+        </div>
+    </div>
+
     <!-- Skulpt JavaScript Library for Python Execution -->
     <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
@@ -103,6 +134,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/matchbrackets.min.js"></script>
 
     <script>
+        // Initialize CodeMirror for Syntax Highlighting and Editing
+        var editor = CodeMirror.fromTextArea(document.getElementById("code-input"), {
+            mode: "python", // Set the mode to Python for syntax highlighting
+            theme: "dracula",  // You can change the theme here (e.g., "dracula", "monokai", etc.)
+            lineNumbers: true, // Show line numbers
+            autoCloseBrackets: true, // Automatically close brackets
+            matchBrackets: true, // Highlight matching brackets
+            indentUnit: 4,  // Set indentation to 4 spaces
+            tabSize: 4,
+            indentWithTabs: false,
+        });
+
         // Quiz Logic
         function checkQuiz() {
             let score = 0;
@@ -113,6 +156,7 @@
             if (q2 && q2.value === 'c') score++;
 
             document.getElementById('quiz-result').innerText = "You scored: " + score + "/2";
+            updateProgress();
         }
 
         // Python Code Execution using Skulpt
@@ -143,22 +187,32 @@
                 return Sk.importMainWithBody("<stdin>", false, code, true);
             }).then(function(mod) {
                 outputElement.innerText += "\nProgram finished.";
+                updateProgress();
             }).catch(function(err) {
                 outputElement.innerText = "Error: " + err.toString() + "\n";
             });
         }
 
-        // Initialize CodeMirror for Syntax Highlighting and Editing
-        var editor = CodeMirror.fromTextArea(document.getElementById("code-input"), {
-            mode: "python", // Set the mode to Python for syntax highlighting
-            theme: "dracula",  // You can change the theme here (e.g., "dracula", "monokai", etc.)
-            lineNumbers: true, // Show line numbers
-            autoCloseBrackets: true, // Automatically close brackets
-            matchBrackets: true, // Highlight matching brackets
-            indentUnit: 4,  // Set indentation to 4 spaces
-            tabSize: 4,
-            indentWithTabs: false,
-        });
+        // Progress Update
+        function updateProgress() {
+            let videoWatched = document.getElementById('video-iframe').contentWindow.postMessage('{"event":"command","func":"getVideoData","args":""}', '*');
+            let quizCompleted = document.querySelector('input[name="q1"]:checked') && document.querySelector('input[name="q2"]:checked');
+            let codeRun = document.getElementById('output').innerText.includes('Program finished.');
+
+            let progress = 0;
+            if (videoWatched) progress += 33;
+            if (quizCompleted) progress += 33;
+            if (codeRun) progress += 34;
+
+            let progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = progress + '%';
+            progressBar.innerText = progress + '%';
+        }
+
+        // Update progress when page loads
+        window.onload = function() {
+            updateProgress();
+        };
     </script>
 
 </body>
