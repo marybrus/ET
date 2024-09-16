@@ -120,6 +120,7 @@
                 output: outf,
                 read: builtinRead,
                 execLimit: 10000, // 10 seconds execution limit to prevent long-running code
+                __future__: Sk.python3, // Enable Python 3 features
             });
 
             function outf(text) {
