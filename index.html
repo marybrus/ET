@@ -19,11 +19,6 @@
             padding: 10px;
             border-radius: 5px;
         }
-        .coding-section textarea {
-            width: 100%;
-            height: 200px;
-            margin-bottom: 10px;
-        }
         .coding-output {
             background-color: #e8e8e8;
             padding: 10px;
@@ -39,6 +34,13 @@
             color: white;
             border: none;
             cursor: pointer;
+        }
+
+        /* Adjust the style for the CodeMirror editor */
+        .CodeMirror {
+            border: 1px solid #ddd;
+            font-size: 14px;
+            height: auto;
         }
     </style>
 
@@ -121,7 +123,7 @@
         }
 
         function runPythonCode() {
-            let code = editor.getValue();
+            let code = editor.getValue(); // Get value from CodeMirror editor
             let outputElement = document.getElementById('output');
             outputElement.innerText = ""; // Clear previous output
 
@@ -148,12 +150,14 @@
 
         // Initialize CodeMirror for Syntax Highlighting and Editing
         var editor = CodeMirror.fromTextArea(document.getElementById("code-input"), {
-            mode: "python",
-            theme: "dracula",  // You can change the theme here
-            lineNumbers: true,
-            autoCloseBrackets: true,
-            matchBrackets: true,
+            mode: "python", // Set the mode to Python for syntax highlighting
+            theme: "dracula",  // You can change the theme here (e.g., "dracula", "monokai", etc.)
+            lineNumbers: true, // Show line numbers
+            autoCloseBrackets: true, // Automatically close brackets
+            matchBrackets: true, // Highlight matching brackets
             indentUnit: 4,  // Set indentation to 4 spaces
+            tabSize: 4,
+            indentWithTabs: false,
         });
     </script>
 
