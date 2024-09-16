@@ -41,6 +41,10 @@
             cursor: pointer;
         }
     </style>
+
+    <!-- Add CodeMirror CSS for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
 </head>
 <body>
 
@@ -90,6 +94,12 @@
     <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
 
+    <!-- Add CodeMirror JavaScript for Syntax Highlighting and Code Editing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/matchbrackets.min.js"></script>
+
     <script>
         // Quiz Logic
         function checkQuiz() {
@@ -111,7 +121,7 @@
         }
 
         function runPythonCode() {
-            let code = document.getElementById('code-input').value;
+            let code = editor.getValue();
             let outputElement = document.getElementById('output');
             outputElement.innerText = ""; // Clear previous output
 
@@ -135,6 +145,16 @@
                 outputElement.innerText = "Error: " + err.toString() + "\n";
             });
         }
+
+        // Initialize CodeMirror for Syntax Highlighting and Editing
+        var editor = CodeMirror.fromTextArea(document.getElementById("code-input"), {
+            mode: "python",
+            theme: "dracula",  // You can change the theme here
+            lineNumbers: true,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            indentUnit: 4,  // Set indentation to 4 spaces
+        });
     </script>
 
 </body>
