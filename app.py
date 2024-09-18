@@ -1,46 +1,33 @@
-from flask import Flask, render_template, request, jsonify
-import subprocess
+from flask import Flask, request, jsonify, render_template
+import numpy as np
 
 app = Flask(__name__)
 
+# Serve the HTML page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('layout.html')
 
-@app.route('/check_quiz', methods=['POST'])
-def check_quiz():
-    answers = request.json
-    score = 0
-
-    # Correct answers for the quiz
-    correct_answers = {
-        'q1': 'a',  # Correct answer for question 1
-        'q2': 'b'   # Correct answer for question 2
-    }
-
-    for question, answer in answers.items():
-        if correct_answers.get(question) == answer:
-            score += 1
-
-    return jsonify({"result": f"You got {score} out of 2 questions right!"})
-
+# API route to run Python code
 @app.route('/run_code', methods=['POST'])
 def run_code():
-    code = request.json.get('code')
-
     try:
-        # Use subprocess to execute Python code safely
-        result = subprocess.run(
-            ['python3', '-c', code],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        output = result.stdout if result.stdout else "Code executed successfully"
+        # Get the Python code from the request
+        code = request.json.get('code')
+
+        # Define a safe execution environment
+        exec_env = {}
+
+        # Execute the provided code safely
+        exec(code, {'np': np}, exec_env)
+
+        # Get the result from the environment
+        result = exec_env.get('result', 'Code executed without output')
+        return jsonify({'output': str(result)})
     except Exception as e:
-        output = f"Error: {str(e)}"
-    
-    return jsonify({"output": output})
+        # Handle errors
+        return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
+
