@@ -3,131 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz, Video, and Coding Platform</title>
+    <title>Learn Python</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
         }
-        h1, h2 {
+        h2 {
             color: #333;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
+        .quiz-section, .coding-section {
+            margin: 20px 0;
         }
-        .quiz, .coding-section {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        pre {
-            background-color: #e8e8e8;
+        .quiz-section {
+            background-color: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
         }
-        iframe {
-            width: 100%;
-            height: 400px;
+        .coding-output {
+            background-color: #e8e8e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .submit-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        /* Adjust the style for the CodeMirror editor */
+        .CodeMirror {
+            border: 1px solid #ddd;
+            font-size: 14px;
+            height: auto;
+            min-height: 200px;
+        }
+
+        /* Progress bar styling */
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+        }
+        .progress-container {
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            width: 100%;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            text-align: center;
+            color: white;
+            width: 0;
+            line-height: 20px;
         }
     </style>
+
+    <!-- Add CodeMirror CSS for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>Interactive Quiz, Video, and Coding Platform</h1>
+    <h1>Welcome to Python Learning</h1>
 
     <!-- Video Section -->
-    <section class="video">
-        <h2>Watch this Video</h2>
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-    </section>
+    <div class="video-section">
+        <h2>Watch the video to get started</h2>
+        <!-- Embed YouTube video -->
+        <iframe width="640" height="360" src="https://www.youtube.com/embed/uMeFaDAUE9w" 
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen id="video-iframe">
+        </iframe>
+    </div>
 
     <!-- Quiz Section -->
-    <section class="quiz">
-        <h2>Quiz</h2>
-        <form id="quizForm">
-            <p><strong>1. What does HTML stand for?</strong></p>
-            <input type="radio" name="q1" value="a"> Hyper Text Markup Language<br>
-            <input type="radio" name="q1" value="b"> Home Tool Markup Language<br>
-            <input type="radio" name="q1" value="c"> Hyperlinks and Text Markup Language<br>
+    <div class="quiz-section">
+        <h2>Quiz: Python Basics</h2>
 
-            <p><strong>2. What is the correct way to create a function in Python?</strong></p>
-            <input type="radio" name="q2" value="a"> def myFunction()<br>
-            <input type="radio" name="q2" value="b"> create myFunction()<br>
-            <input type="radio" name="q2" value="c"> function myFunction()<br>
+        <form id="quiz">
+            <p><strong>1. How do you print something in Python?</strong></p>
+            <input type="radio" name="q1" value="a"> print('text')<br>
+            <input type="radio" name="q1" value="b"> echo('text')<br>
+            <input type="radio" name="q1" value="c"> write('text')<br>
 
-            <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+            <p><strong>2. How do you write a comment in Python?</strong></p>
+            <input type="radio" name="q2" value="a"> // This is a comment<br>
+            <input type="radio" name="q2" value="b"> /* This is a comment */<br>
+            <input type="radio" name="q2" value="c"> # This is a comment<br>
+
+            <button type="button" class="submit-btn" onclick="checkQuiz()">Submit Quiz</button>
         </form>
-        <p id="quizResult"></p>
-    </section>
+
+        <div id="quiz-result"></div>
+    </div>
 
     <!-- Coding Section -->
-    <section class="coding-section">
-        <h2>Try Coding</h2>
-        <p>Write your Python code below and click "Run Code" to see the result:</p>
-        <textarea id="codeInput" rows="8" style="width: 100%;"></textarea><br>
-        <button onclick="runCode()">Run Code</button>
-        <h3>Output:</h3>
-        <pre id="output"></pre>
-    </section>
+    <div class="coding-section">
+        <h2>Practice Python Coding</h2>
+        <p>Write Python code below and click "Run Code" to execute it.</p>
+        <textarea id="code-input">print("Hello, Python!")</textarea>
+        <button class="submit-btn" onclick="runPythonCode()">Run Code</button>
+        <div id="output" class="coding-output"></div>
+    </div>
 
-</div>
+    <!-- Footer with Progress Bar -->
+    <div class="footer">
+        <h2>Progress</h2>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar">0%</div>
+        </div>
+    </div>
 
-<script>
-    // Submit quiz function
-    function submitQuiz() {
-        const formData = new FormData(document.getElementById('quizForm'));
-        const answers = {};
-        formData.forEach((value, key) => answers[key] = value);
+    <!-- Skulpt JavaScript Library for Python Execution -->
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
 
-        fetch('/check_quiz', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(answers),
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('quizResult').innerText = data.result;
+    <!-- Add CodeMirror JavaScript for Syntax Highlighting and Code Editing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/indentation-notches.min.js"></script>
+
+    <script>
+        // Initialize CodeMirror for Syntax Highlighting and Editing
+        var editor = CodeMirror.fromTextArea(document.getElementById("code-input"), {
+            mode: "python", // Set the mode to Python for syntax highlighting
+            theme: "dracula",  // You can change the theme here (e.g., "dracula", "monokai", etc.)
+            lineNumbers: true, // Show line numbers
+            autoCloseBrackets: true, // Automatically close brackets
+            matchBrackets: true, // Highlight matching brackets
+            indentUnit: 4,  // Set indentation to 4 spaces
+            tabSize: 4,
+            indentWithTabs: false,
         });
-    }
 
-    // Run code function
-    function runCode() {
-        const code = document.getElementById('codeInput').value;
-        
-        fetch('/run_code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({code: code}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('output').innerText = data.output;
-        });
-    }
-</script>
+        // Quiz Logic
+        function checkQuiz() {
+            let score = 0;
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+
+            if (q1 && q1.value === 'a') score++;
+            if (q2 && q2.value === 'c') score++;
+
+            document.getElementById('quiz-result').innerText = "You scored: " + score + "/2";
+            updateProgress();
+        }
+
+        // Python Code Execution using Skulpt
+        function builtinRead(x) {
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+                throw "File not found: '" + x + "'";
+            return Sk.builtinFiles["files"][x];
+        }
+
+        function runPythonCode() {
+            let code = editor.getValue(); // Get value from CodeMirror editor
+            let outputElement = document.getElementById('output');
+            outputElement.innerText = ""; // Clear previous output
+
+            Sk.pre = "output";
+            Sk.configure({
+                output: outf,
+                read: builtinRead,
+                execLimit: 10000, // 10 seconds execution limit to prevent long-running code
+                __future__: Sk.python3, // Enable Python 3 features
+            });
+
+            function outf(text) {
+                outputElement.innerText += text; // Append the output to the div
+            }
+
+            Sk.misceval.asyncToPromise(function() {
+                return Sk.importMainWithBody("<stdin>", false, code, true);
+            }).then(function(mod) {
+                outputElement.innerText += "\nProgram finished.";
+                updateProgress();
+            }).catch(function(err) {
+                outputElement.innerText = "Error: " + err.toString() + "\n";
+            });
+        }
+
+        // Progress Update
+        function updateProgress() {
+            let videoWatched = document.getElementById('video-iframe').contentWindow.postMessage('{"event":"command","func":"getVideoData","args":""}', '*');
+            let quizCompleted = document.querySelector('input[name="q1"]:checked') && document.querySelector('input[name="q2"]:checked');
+            let codeRun = document.getElementById('output').innerText.includes('Program finished.');
+
+            let progress = 0;
+            if (videoWatched) progress += 33;
+            if (quizCompleted) progress += 33;
+            if (codeRun) progress += 34;
+
+            let progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = progress + '%';
+            progressBar.innerText = progress + '%';
+        }
+
+        // Update progress when page loads
+        window.onload = function() {
+            updateProgress();
+        };
+    </script>
 
 </body>
 </html>
