@@ -25,6 +25,7 @@
             border-radius: 5px;
             margin-top: 10px;
             white-space: pre-wrap;
+            min-height: 100px;
         }
         .submit-btn {
             display: block;
@@ -34,6 +35,7 @@
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 5px;
         }
 
         /* Adjust the style for the CodeMirror editor */
@@ -124,10 +126,6 @@
         </div>
     </div>
 
-    <!-- Skulpt JavaScript Library for Python Execution -->
-    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
-
     <!-- Add CodeMirror JavaScript for Syntax Highlighting and Code Editing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
@@ -161,48 +159,39 @@
             updateProgress();
         }
 
-        // Python Code Execution using Skulpt
-        function builtinRead(x) {
-            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
-                throw "File not found: '" + x + "'";
-            return Sk.builtinFiles["files"][x];
-        }
-
+        // Python Code Execution using Flask Backend
         function runPythonCode() {
-            let code = editor.getValue(); // Get value from CodeMirror editor
-            let outputElement = document.getElementById('output');
-            outputElement.innerText = ""; // Clear previous output
+            let code = editor.getValue();  // Get code from CodeMirror
 
-            Sk.pre = "output";
-            Sk.configure({
-                output: outf,
-                read: builtinRead,
-                execLimit: 10000, // 10 seconds execution limit to prevent long-running code
-                __future__: Sk.python3, // Enable Python 3 features
-            });
-
-            function outf(text) {
-                outputElement.innerText += text; // Append the output to the div
-            }
-
-            Sk.misceval.asyncToPromise(function() {
-                return Sk.importMainWithBody("<stdin>", false, code, true);
-            }).then(function(mod) {
-                outputElement.innerText += "\nProgram finished.";
+            // Use fetch to send the code to the backend
+            fetch('/run_code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: code }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('output').innerText = "Error: " + data.error;
+                } else {
+                    document.getElementById('output').innerText = data.output;
+                }
                 updateProgress();
-            }).catch(function(err) {
-                outputElement.innerText = "Error: " + err.toString() + "\n";
+            })
+            .catch(error => {
+                document.getElementById('output').innerText = "Error: " + error.toString();
             });
         }
 
         // Progress Update
         function updateProgress() {
-            let videoWatched = document.getElementById('video-iframe').contentWindow.postMessage('{"event":"command","func":"getVideoData","args":""}', '*');
             let quizCompleted = document.querySelector('input[name="q1"]:checked') && document.querySelector('input[name="q2"]:checked');
-            let codeRun = document.getElementById('output').innerText.includes('Program finished.');
+            let codeRun = document.getElementById('output').innerText.trim() !== '';
 
             let progress = 0;
-            if (videoWatched) progress += 33;
+            if (document.getElementById('video-iframe').src) progress += 33;
             if (quizCompleted) progress += 33;
             if (codeRun) progress += 34;
 
