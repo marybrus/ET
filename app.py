@@ -1,46 +1,46 @@
-from flask import Flask, request, jsonify, render_template
-import numpy as np
-import io
-import sys
+from flask import Flask, render_template, request, jsonify
+import subprocess
 
 app = Flask(__name__)
 
-# Serve the HTML page
 @app.route('/')
 def index():
-    return render_template('layout.html')
+    return render_template('index.html')
 
-# API route to run Python code
+@app.route('/check_quiz', methods=['POST'])
+def check_quiz():
+    answers = request.json
+    score = 0
+
+    # Correct answers for the quiz
+    correct_answers = {
+        'q1': 'a',  # Correct answer for question 1
+        'q2': 'b'   # Correct answer for question 2
+    }
+
+    for question, answer in answers.items():
+        if correct_answers.get(question) == answer:
+            score += 1
+
+    return jsonify({"result": f"You got {score} out of 2 questions right!"})
+
 @app.route('/run_code', methods=['POST'])
 def run_code():
+    code = request.json.get('code')
+
     try:
-        # Get the Python code from the request
-        code = request.json.get('code')
-
-        # Create a StringIO buffer to capture output
-        output_buffer = io.StringIO()
-        sys.stdout = output_buffer  # Redirect stdout to the buffer
-
-        # Define a safe execution environment
-        exec_env = {}
-
-        # Execute the provided code safely
-        exec(code, {'np': np}, exec_env)
-
-        # Get the result from the environment and buffer
-        sys.stdout = sys.__stdout__  # Reset stdout back to default
-
-        # Capture printed output
-        output = output_buffer.getvalue()
-
-        # If no output, provide a default message
-        if not output:
-            output = "Code executed without output."
-
-        return jsonify({'output': output})
+        # Use subprocess to execute Python code safely
+        result = subprocess.run(
+            ['python3', '-c', code],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        output = result.stdout if result.stdout else "Code executed successfully"
     except Exception as e:
-        # Handle errors
-        return jsonify({'error': str(e)}), 400
+        output = f"Error: {str(e)}"
+
+    return jsonify({"output": output})
 
 if __name__ == '__main__':
     app.run(debug=True)
