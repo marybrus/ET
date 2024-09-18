@@ -39,7 +39,7 @@ def run_code():
         output = result.stdout if result.stdout else "Code executed successfully"
     except Exception as e:
         output = f"Error: {str(e)}"
-
+    
     return jsonify({"output": output})
 
 if __name__ == '__main__':
